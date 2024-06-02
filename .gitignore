@@ -1,7 +1,7 @@
 #Dependencies
 .vscode
 TestEnv/*
-
+__pycache__/*
 
 #Dependencies
 
