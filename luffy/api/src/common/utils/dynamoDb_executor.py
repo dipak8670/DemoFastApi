@@ -6,9 +6,9 @@ from luffy.api.src.common.enum.aws_enum import AwsEnum
 class DynamoDbExecutor:
     def __init__(self):
         aws = {
-            "aws_access_key_id" : AwsEnum.ACCESS_KEY_ID.value,
-            "aws_secret_access_key" : AwsEnum.ACCESS_KEY.value,
-            "region_name":"us-west-2"
+            "aws_access_key_id": AwsEnum.ACCESS_KEY_ID.value,
+            "aws_secret_access_key": AwsEnum.ACCESS_KEY.value,
+            "region_name": "us-west-2",
         }
         self.dynamodb_resource = boto3.resource(
             "dynamodb",

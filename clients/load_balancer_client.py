@@ -8,7 +8,7 @@ print(response.json())
 response = requests.get(f"{base_url}/hi")
 print(response.json())
 
-data = {"name": "ABC", "phone":"Test-Phone"}
+data = {"name": "ABC", "phone": "Test-Phone"}
 response = requests.post(f"{base_url}add", json=data)
 print(response.json())
 
