@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 
-from luffy.api.src.common.models.name_request import NameRequest
+from luffy.api.src.common.models.request_model import RequestModel
+from luffy.api.src.common.utils.dynamoDb_executor import DynamoDbExecutor
 
 
 app = FastAPI()
@@ -20,10 +21,19 @@ async def health_check():
 async def hi():
     return {"message": "Hi, Dipak!"}
 
-
-@app.post("/name")
-def putName(request: NameRequest):
-    if request.name:
-        return {"message": f"Hi, {request.name}!"}
+@app.post("/add")
+def add(request: RequestModel):
+    if request.name and request.phone:
+        item={}
+        item["name"]=request.name
+        item["phone"]=request.phone
+        try:
+            dynamoDb_executor = DynamoDbExecutor()
+            dynamoDb_executor.save(item)
+            return {"message": f"Hi, {request.name}! Your phone number is {request.phone}."}
+        except Exception as e:
+            raise HTTPException(status_code=422, detail=e)
+        
     else:
-        raise HTTPException(status_code=422, detail="Name parameter is missing.")
+        raise HTTPException(status_code=422, detail="Parameters name and/or phone are missing.")
+

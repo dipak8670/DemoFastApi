@@ -8,3 +8,4 @@ pytest
 httpx
 black==21.10b0
 click>=7.1.2,<8.1
+boto3==1.*
