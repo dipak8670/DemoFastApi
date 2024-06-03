@@ -12,3 +12,6 @@ stop:
 
 clean:
 	docker rm $(CONTAINER_NAME)
+
+delete:
+	docker rmi -f $(IMAGE_NAME)
