@@ -86,6 +86,8 @@ jobs:
 
       - name: Pytest Coverage Comment
         uses: MishaKav/pytest-coverage-comment@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
         with:
           multiple-files: |
             LUFFY_PYTEST, ./LUFFY_PYTEST/luffy-pytest-coverage.txt, ./LUFFY_PYTEST/luffy-pytests.xml
