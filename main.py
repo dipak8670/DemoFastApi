@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from typing import Optional
 
+from models import NameRequest
+
 
 app = FastAPI()
 
@@ -20,9 +22,9 @@ async def hi():
     return {"message": "Hi, Dipak!"}
 
 
-@app.post("/nam")
-def putName(name: Optional[str] = None):
-    if name:
-        return {"message": f"Hi, {name}!"}
+@app.post("/name")
+def putName(request: NameRequest):
+    if request.name:
+        return {"message": f"Hi, {request.name}!"}
     else:
         raise HTTPException(status_code=422, detail="Name parameter is missing.")
