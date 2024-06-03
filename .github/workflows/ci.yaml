@@ -58,6 +58,13 @@ jobs:
         run: |
           docker build -t demo-fastapi-app:latest .
 
+      - name: Create app directory
+        run: |
+          docker run --rm \
+            -v ${{ github.workspace }}:/app \
+            demo-fastapi-app:latest \
+            mkdir -p /app
+
       - name: Run unit test
         run: |
           set -o pipefail
