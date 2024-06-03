@@ -2,7 +2,8 @@
 .vscode
 TestEnv/*
 __pycache__/*
-
+awscliv2.zip
+aws/*
 #Dependencies
 
 __pycache__/

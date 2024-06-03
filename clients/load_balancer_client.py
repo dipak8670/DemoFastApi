@@ -1,7 +1,6 @@
 import requests
 
-# base_url = "http://127.0.0.1:80"
-base_url = "http://18.237.36.173:80"
+base_url = "http://demo-fast-api-lb-1119634285.us-west-2.elb.amazonaws.com"
 
 response = requests.get(f"{base_url}/")
 print(response.json())
