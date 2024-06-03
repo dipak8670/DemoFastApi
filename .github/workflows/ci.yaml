@@ -10,8 +10,9 @@ on:
       - 'main'
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
+  repository-projects: write
 
 jobs:
   check-linting-and-type-error:
@@ -79,6 +80,10 @@ jobs:
   coverage-comment:
     runs-on: ubuntu-latest
     needs: [check-unit-test]
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
     steps:
       - name: Download all workrun artifacts
         uses: actions/download-artifact@v3
