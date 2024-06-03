@@ -17,4 +17,4 @@ EXPOSE 8000
 ENV PORT=8000
 
 # Run app.py when the container launches
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "luffy.api.src.main:app", "--host", "0.0.0.0", "--port", "8000"]
