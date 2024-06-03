@@ -5,6 +5,7 @@ gunicorn==21.2.0
 pydantic
 typing
 pytest
+pytest-cov
 httpx
 black==21.10b0
 click>=7.1.2,<8.1
