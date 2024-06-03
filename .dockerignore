@@ -1,5 +1,7 @@
 **/__pycache__
 **/.venv
+awscliv2.zip
+aws/*
 **/.classpath
 **/.dockerignore
 **/.env
