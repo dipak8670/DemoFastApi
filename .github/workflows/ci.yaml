@@ -67,7 +67,7 @@ jobs:
       - name: Upload test results
         uses: actions/upload-artifact@v3
         with:
-          name: luffy-test-results
+          name: LUFFY_PYTEST
           path: |
             ./luffy-pytest*.*
   
@@ -82,4 +82,4 @@ jobs:
         uses: MishaKav/pytest-coverage-comment@main
         with:
           multiple-files: |
-            LUFFY-PYTEST, ./LUFFY-PYTEST/luffy-pytest-coverage.txt, ./LUFFY-PYTEST/luffy-pytests.xml
+            LUFFY_PYTEST, ./LUFFY_PYTEST/luffy-pytest-coverage.txt, ./LUFFY_PYTEST/luffy-pytests.xml
