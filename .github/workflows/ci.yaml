@@ -59,7 +59,9 @@ jobs:
         run: |
           set -o pipefail
           docker run --rm -v $(pwd):/app demo-fastapi-app:latest \
-            python -m pytest luffy --junitxml=luffy-pytests.xml --cov-fail-under=75 --cov-report=term-missing --cov-branch --cov=luffy | tee ./luffy-pytest-coverage.txt
+            bash -c "pytest luffy --junitxml=luffy-pytests.xml && \
+            python -m coverage report --fail-under=75 --include=luffy/* && \
+            python -m coverage xml -o ./luffy-pytest-coverage.xml"
 
       - name: Upload test results
         uses: actions/upload-artifact@v3
