@@ -20,7 +20,7 @@ jobs:
       - name: Install python dependencies
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.11'
         
       - name: Run black
         run: |
@@ -32,7 +32,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install mypy
-          mypy --ignore-missing-imports --exclude '__init__.py' .
+          mypy --ignore-missing-imports --exclude '__init__.py' luffy
 
   check-unit-test:
     runs-on: ubuntu-latest
@@ -44,7 +44,7 @@ jobs:
       - name: Install python dependencies
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.11'
 
       - name: Setup Docker buildx
         uses: docker/setup-buildx-action@v2
