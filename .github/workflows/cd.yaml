@@ -92,4 +92,4 @@ jobs:
             -v ${{ github.workspace}}:/home/root \
             -v /var/run/docker.sock:/var/run/docker.sock:rw \
             $DOCKER_IMAGE_NAME:$IMAGE_TAG \
-            cdk ${{env.action}} -f ${{inputs.stack}} --concurrency 6 --require-approval=never
+            cdk ${{inputs.action}} -f ${{inputs.stack}} --concurrency 6 --require-approval=never
