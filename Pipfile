@@ -10,6 +10,8 @@ boto3 = "==1.*"
 constructs = "<11.0.0,>=10.0.0"
 pydantic = "==1.8.2"  # Adjusted to a valid version
 pytest = "==7.*"
+pytest-cov = "==3.*"
+coverage-threshold = "==0.*"
 awscli = "*"  # Keep wildcard for latest version
 fastapi = "==0.109.0"
 uvicorn = "==0.27.0"
