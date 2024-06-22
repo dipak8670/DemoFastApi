@@ -36,6 +36,12 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: Development
+    timeout-minutes: 10
+    permissions:
+      id-token: write
+      contents: read
+      packages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3
