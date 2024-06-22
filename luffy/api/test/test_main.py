@@ -1,3 +1,4 @@
+from unittest import mock
 from luffy.api.src.main import app
 from fastapi.testclient import TestClient
 from fastapi import status
@@ -23,7 +24,10 @@ def test_hi():
     assert response.json() == {"message": "Hi, Dipak!"}
 
 
-def test_add_success():
+@mock.patch("luffy.api.src.main.DynamoDbExecutor")
+def test_add_success(mock_db_client):
+    mock_db_client_instance = mock_db_client.return_value
+    mock_db_client_instance.save.return_value = {"status": "success"}
     request_data = {"name": "John", "phone": "1234567890"}
     response = client.post("/add", json=request_data)
     assert response.status_code == status.HTTP_200_OK

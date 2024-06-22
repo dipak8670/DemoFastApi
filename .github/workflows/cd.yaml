@@ -1,0 +1,89 @@
+name: Deployment
+on:
+  workflow_dispatch:
+    inputs:
+      account_id:
+        description: Account ID
+        required: true
+        type: string
+      stack:
+        description: Stack name
+        required: true
+        type: choice
+        options:
+          - ECRStack
+          - ECSClusterStack
+      skip_test:
+        description: Skip test
+        required: false
+        type: boolean
+        default: false
+      action:
+        description: 'Deploy or destroy stack'
+        type: choice
+        required: false
+        default: 'deploy'
+        options:
+          - deploy
+          - destroy
+
+env:
+  IMAGE_TAG: latest
+  DOCKER_IMAGE_NAME: student-api
+  AWS_DEFAULT_REGION: us-west-2
+  AWS_ACCOUNT_ID: ${{inputs.account_id}}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ env.AWS_SESSION_TOKEN }}
+          role-duration-seconds: 3600
+          role-skip-session-tagging: true
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/aws-github-ci-role
+          role-session-name: student-api-deployment
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          platform: linux/amd64
+
+      - name: Build Docker Image
+        run: |
+          docker build -t ${{ env.DOCKER_IMAGE_NAME }}:${{ env.IMAGE_TAG }} . \
+            --build-arg AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID} \
+            --build-arg AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY} \
+            --build-arg AWS_DEFAULT_REGION=${env.AWS_DEFAULT_REGION} \
+            --build-arg AWS_SESSION_TOKEN=${env.AWS_SESSION_TOKEN}
+
+      - name: Common unit tests
+        if: ${{ inputs.skip_test == false }}
+        run: |
+          set -o pipefail
+          docker run -rm \
+            -v ${{ github.workspace}}:/home/root \
+            -v /var/run/docker.sock:/var/run/docker.sock:rw \
+            $DOCKER_IMAGE_NAME:$IMAGE_TAG \
+            python -m pytest 
+
+      - name: Deploy infrastructure
+        id: run-deploy
+        run: |
+          docker run --rm \
+            -e AWS_ACCESS_KEY_ID \
+            -e AWS_SECRET_ACCESS_KEY \
+            -e AWS_DEFAULT_REGION \
+            -e AWS_SESSION_TOKEN \
+            -v ${{ github.workspace}}:/home/root \
+            -v /var/run/docker.sock:/var/run/docker.sock:rw \
+            $DOCKER_IMAGE_NAME:$IMAGE_TAG \
+            cdk ${{env.action}} -f ${{inputs.stack}} --concurrency 6 --require-approval=never

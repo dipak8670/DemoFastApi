@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+aws-cdk-lib = "==2.*"
+black = "==22.*"
+boto3 = "==1.*"
+constructs = "<11.0.0,>=10.0.0"
+pydantic = "==1.8.2"  # Adjusted to a valid version
+pytest = "==7.*"
+awscli = "*"  # Keep wildcard for latest version
+fastapi = "==0.109.0"
+uvicorn = "==0.27.0"
+gunicorn = "==21.2.0"
+
+[requires]
+python_version = "3.11"

@@ -21,7 +21,7 @@ run:
 		-v $(PWD)/$(HISTORY_FILE):/build/$(HISTORY_FILE) \
 		-v $(HOME)/.aws/:/root/.aws/:rw \
 		-v $(PWD):/home/root \
-		-d --name $(CONTAINER_NAME) \
+		-d --name $(CONTAINER_NAME) -p 80:80 \
 		$(IMAGE_NAME) 
 
 
