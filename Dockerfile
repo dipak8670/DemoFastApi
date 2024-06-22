@@ -1,4 +1,3 @@
-# Use an official Python runtime as a parent image
 FROM node:20.11-alpine AS node
 FROM python:3.11-alpine
 
@@ -6,7 +5,6 @@ FROM python:3.11-alpine
 USER root
 WORKDIR /home/root
 
-COPY requirements.txt requirements.txt
 COPY luffy luffy
 COPY Pipfile Pipfile
 COPY Pipfile.lock Pipfile.lock
@@ -26,9 +24,6 @@ COPY --from=node /usr/local/include /usr/local/include
 COPY --from=node /usr/local/bin /usr/local/bin
 
 RUN npm install -g aws-cdk
-
-EXPOSE 80
-ENV PORT=80
 
 ARG AWS_ACCESS_KEY_ID
 ARG AWS_SECRET_ACCESS_KEY
