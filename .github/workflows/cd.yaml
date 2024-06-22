@@ -66,10 +66,10 @@ jobs:
       - name: Build Docker Image
         run: |
           docker build -t ${{ env.DOCKER_IMAGE_NAME }}:${{ env.IMAGE_TAG }} . \
-            --build-arg AWS_ACCESS_KEY_ID=${env.AWS_ACCESS_KEY_ID} \
-            --build-arg AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY} \
-            --build-arg AWS_DEFAULT_REGION=${env.AWS_DEFAULT_REGION} \
-            --build-arg AWS_SESSION_TOKEN=${env.AWS_SESSION_TOKEN}
+            --build-arg AWS_ACCESS_KEY_ID=${{env.AWS_ACCESS_KEY_ID}} \
+            --build-arg AWS_SECRET_ACCESS_KEY=${{env.AWS_SECRET_ACCESS_KEY}} \
+            --build-arg AWS_DEFAULT_REGION=${{env.AWS_DEFAULT_REGION}} \
+            --build-arg AWS_SESSION_TOKEN=${{env.AWS_SESSION_TOKEN}}
 
       - name: Common unit tests
         if: ${{ inputs.skip_test == false }}
@@ -92,4 +92,4 @@ jobs:
             -v ${{ github.workspace}}:/home/root \
             -v /var/run/docker.sock:/var/run/docker.sock:rw \
             $DOCKER_IMAGE_NAME:$IMAGE_TAG \
-            cdk ${{env.action}} -f ${{inputs.stack}} --concurrency 6 --require-approval=never
+            cdk ${{inputs.action}} -f ${{inputs.stack}} --concurrency 6 --require-approval=never
