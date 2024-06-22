@@ -4,6 +4,9 @@ TestEnv/*
 __pycache__/*
 awscliv2.zip
 aws/*
+cdk.out/*
+.image_bash_directory
+cdk_env/*
 #Dependencies
 
 __pycache__/
