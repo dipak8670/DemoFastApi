@@ -1,13 +1,18 @@
-# Use an official Python runtime as a parent image
+FROM node:20.11-alpine AS node
 FROM python:3.11-alpine
 
-WORKDIR /app
 
-COPY requirements.txt /app/luffy/api/requirements.txt
+USER root
+WORKDIR /home/root
 
-RUN pip install --no-cache-dir -r /app/luffy/api/requirements.txt
+COPY src ./luffy/api/src
+COPY Pipfile ./luffy/api/Pipfile
+COPY Pipfile.lock ./luffy/api/Pipfile.lock
 
-COPY src /app/luffy/api/src
+RUN pip install pipenv
+RUN PIPENV_PIPFILE=./luffy/api/Pipfile pipenv install --system --deploy
+
+ENV PYTHONPATH "${PYTHONPATH}:/home/root/luffy/api/src"
 
 EXPOSE 80
 ENV PORT=80
@@ -17,10 +22,10 @@ ARG AWS_SECRET_ACCESS_KEY
 ARG AWS_DEFAULT_REGION
 ARG AWS_SESSION_TOKEN
 
-ENV AWS_ACCESS_KEY_ID ${AWS_ACCESS_KEY_ID}
-ENV AWS_SECRET_ACCESS_KEY ${AWS_SECRET_ACCESS_KEY}
-ENV AWS_DEFAULT_REGION ${AWS_DEFAULT_REGION}
-ENV AWS_SESSION_TOKEN ${AWS_SESSION_TOKEN}
+ENV AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+ENV AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+ENV AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+ENV AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
 
 
 CMD ["uvicorn", "luffy.api.src.main:app", "--host", "0.0.0.0", "--port", "80"]
