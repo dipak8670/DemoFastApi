@@ -57,7 +57,7 @@ class ECSClusterStack(Stack):
                     "dynamodb:UpdateItem",
                 ],
                 resources=[
-                    f"arn:aws:dynamodb:{aws_region}:{aws_account_id}:table/StudentApiDynamoDBTable"
+                    f"arn:aws:dynamodb:{aws_region}:{aws_account_id}:table/StudentApiDynamoDBTable*"
                 ],
             )
         )
