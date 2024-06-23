@@ -9,40 +9,54 @@ from constructs import Construct
 
 
 class ECSClusterStack(Stack):
-    def __init__(self, scope: Construct, id: str, **kwargs) -> None:
+    def __init__(
+        self, scope: Construct, id: str, aws_account_id: str, aws_region: str, **kwargs
+    ) -> None:
         super().__init__(scope, id, **kwargs)
 
         # Create a VPC
-        vpc = ec2.Vpc(self, "MyVpc", max_azs=2)
+        vpc = ec2.Vpc(self, "StudentApiVpc", max_azs=2)
 
         # Create an ECS cluster
-        cluster = ecs.Cluster(self, "MyCluster", vpc=vpc)
+        cluster = ecs.Cluster(self, "StudentApiCluster", vpc=vpc)
 
         # Define an IAM role for the task with the necessary permissions
         task_role = iam.Role(
             self,
-            "MyTaskRole",
+            "StudentApiTaskRole",
             assumed_by=iam.ServicePrincipal("ecs-tasks.amazonaws.com"),
         )
 
         # Add necessary policies to the role
-        task_role.add_managed_policy(
-            iam.ManagedPolicy.from_aws_managed_policy_name(
-                "AmazonS3ReadOnlyAccess"
-            )  # Example policy
+        task_role.add_to_policy(
+            iam.PolicyStatement(
+                actions=[
+                    "dynamodb:BatchGetItem",
+                    "dynamodb:BatchWriteItem",
+                    "dynamodb:DeleteItem",
+                    "dynamodb:GetItem",
+                    "dynamodb:PutItem",
+                    "dynamodb:Query",
+                    "dynamodb:Scan",
+                    "dynamodb:UpdateItem",
+                ],
+                resources=[
+                    f"arn:aws:dynamodb:{aws_region}:{aws_account_id}:table/STUDENT*"
+                ],
+            )
         )
         # Add more policies as needed
 
         # Create a Fargate task definition
         task_definition = ecs.FargateTaskDefinition(
-            self, "MyTaskDef", task_role=task_role
+            self, "StudentApiTaskDefinition", task_role=task_role
         )
 
         # Add a container to the task definition
         container = task_definition.add_container(
-            "MyContainer",
+            "StudentApiContainer",
             image=ecs.ContainerImage.from_registry(
-                "my-docker-repo/my-fastapi-image:latest"
+                f"{aws_account_id}.dkr.ecr.{aws_region}.amazonaws.com/student-api-ecr-repo:latest"
             ),
             memory_limit_mib=512,
             cpu=256,
@@ -54,7 +68,7 @@ class ECSClusterStack(Stack):
         # Create a Fargate service
         fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(
             self,
-            "MyFargateService",
+            "StudentApiFargateService",
             cluster=cluster,
             task_definition=task_definition,
             public_load_balancer=True,
