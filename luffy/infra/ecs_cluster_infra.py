@@ -57,7 +57,7 @@ class ECSClusterStack(Stack):
                     "dynamodb:UpdateItem",
                 ],
                 resources=[
-                    f"arn:aws:dynamodb:{aws_region}:{aws_account_id}:table/StudentApiDynamoDBTable"
+                    f"arn:aws:dynamodb:{aws_region}:{aws_account_id}:table/StudentApiDynamoDBTable*"
                 ],
             )
         )
@@ -97,7 +97,11 @@ class ECSClusterStack(Stack):
             logging=ecs.LogDriver.aws_logs(
                 stream_prefix="StudentApiContainer",
                 log_group=logs.LogGroup(
-                    self, "StudentApiLogGroup", removal_policy=cdk.RemovalPolicy.DESTROY
+                    self,
+                    id="StudentApiLogGroup",
+                    log_group_name=f"StudentApiLogGroup",
+                    retention=logs.RetentionDays.ONE_DAY,
+                    removal_policy=cdk.RemovalPolicy.DESTROY,
                 ),
             ),
         )
