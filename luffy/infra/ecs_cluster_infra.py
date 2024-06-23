@@ -4,7 +4,9 @@ from aws_cdk import (
     aws_ecs as ecs,
     aws_ecs_patterns as ecs_patterns,
     aws_iam as iam,
+    aws_logs as logs,
 )
+import aws_cdk as cdk
 from constructs import Construct
 
 
@@ -76,6 +78,12 @@ class ECSClusterStack(Stack):
             ),
             memory_limit_mib=512,
             cpu=256,
+            logging=ecs.LogDriver.aws_logs(
+                stream_prefix="StudentApiContainer",
+                log_group=logs.LogGroup(
+                    self, "StudentApiLogGroup", removal_policy=cdk.RemovalPolicy.DESTROY
+                ),
+            ),
         )
 
         # Open the port your FastAPI app is listening on

@@ -1,4 +1,5 @@
 import boto3
+import logging
 
 
 class DynamoDbExecutor:
@@ -10,12 +11,12 @@ class DynamoDbExecutor:
         try:
             return self.__table.put_item(Item=item)
         except Exception as e:
-            print(e)
+            logging.error(e)
             raise e
 
     def get(self, key):
         try:
             return self.__table.get_item(Key=key)
         except Exception as e:
-            print(e)
+            logging.error(e)
             raise e
