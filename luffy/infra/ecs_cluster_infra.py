@@ -21,7 +21,13 @@ class ECSClusterStack(Stack):
         vpc = ec2.Vpc(self, "StudentApiVpc", max_azs=2)
 
         # Create an ECS cluster
-        cluster = ecs.Cluster(self, "StudentApiCluster", vpc=vpc)
+        cluster = ecs.Cluster(
+            self,
+            id="StudentApiCluster",
+            cluster_name="StudentApiCluster",
+            container_insights=True,
+            vpc=vpc,
+        )
 
         dynamo_table = dynamodb.Table(
             self,
@@ -89,6 +95,7 @@ class ECSClusterStack(Stack):
         # Add a container to the task definition
         container = task_definition.add_container(
             "StudentApiContainer",
+            container_name="StudentApiContainer",
             image=ecs.ContainerImage.from_registry(
                 f"{aws_account_id}.dkr.ecr.{aws_region}.amazonaws.com/student-api-ecr-repo:latest"
             ),
@@ -113,6 +120,7 @@ class ECSClusterStack(Stack):
         fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(
             self,
             "StudentApiFargateService",
+            service_name="StudentApiService",
             cluster=cluster,
             task_definition=task_definition,
             public_load_balancer=True,
