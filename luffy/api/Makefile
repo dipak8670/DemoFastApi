@@ -1,5 +1,5 @@
-IMAGE_NAME=my-fastapi-app:latest
-CONTAINER_NAME=my-fastapi-app-container
+IMAGE_NAME=fastapi-app:latest
+CONTAINER_NAME=fastapi-app-container
 HISTORY_FILE= .image_bash_directory
 
 build:
