@@ -1,16 +1,14 @@
 import requests
 
-base_url = "http://demo-fast-api-lb-1119634285.us-west-2.elb.amazonaws.com"
+base_url = "http://ecsclu-stude-ppqkcetcwuvg-1908943909.us-west-2.elb.amazonaws.com/"
 
-response = requests.get(f"{base_url}/")
+response = requests.get(f"{base_url}")
 print(response.json())
 
-response = requests.get(f"{base_url}/hi")
+
+data = {"name": "ABC", "roleNumber": "2"}
+response = requests.post(f"{base_url}add_student", json=data)
 print(response.json())
 
-data = {"name": "ABC", "phone": "Test-Phone"}
-response = requests.post(f"{base_url}add", json=data)
-print(response.json())
-
-response = requests.get(f"{base_url}/hello")
+response = requests.get(f"{base_url}health")
 print(response.json())
