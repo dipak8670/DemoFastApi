@@ -27,7 +27,7 @@ class ECSClusterStack(Stack):
             self,
             "StudentApiDynamoDBTable",
             partition_key=dynamodb.Attribute(
-                name="roleNumber", type=dynamodb.AttributeType.STRING
+                name="role_number", type=dynamodb.AttributeType.STRING
             ),
             table_name="StudentApiDynamoDBTable",
             sort_key=dynamodb.Attribute(
