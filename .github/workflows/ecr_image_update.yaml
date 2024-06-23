@@ -6,6 +6,11 @@ on:
         description: Account ID
         required: true
         type: string
+      redeploy:
+        description: Redeploy
+        required: false
+        type: boolean
+        default: false
 
 env:
   IMAGE_TAG: latest
@@ -51,3 +56,8 @@ jobs:
           aws ecr get-login-password --region ${{ env.AWS_DEFAULT_REGION }} | docker login --username AWS --password-stdin ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_DEFAULT_REGION }}.amazonaws.com
           docker tag ${{ env.DOCKER_IMAGE_NAME }}:${{ env.IMAGE_TAG }} ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_DEFAULT_REGION }}.amazonaws.com/student-api-ecr-repo:latest
           docker push ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_DEFAULT_REGION }}.amazonaws.com/student-api-ecr-repo:latest
+
+      - name: Update ECS Service
+        if: (inputs.redeploy == true)
+        run: |
+          aws ecs update-service --cluster StudentApiCluster --service StudentApiService --force-new-deployment --region ${{ env.AWS_DEFAULT_REGION }}
