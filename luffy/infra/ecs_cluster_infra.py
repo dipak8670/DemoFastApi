@@ -33,8 +33,7 @@ class ECSClusterStack(Stack):
             sort_key=dynamodb.Attribute(
                 name="name", type=dynamodb.AttributeType.STRING
             ),
-            removal_policy=cdk.RemovalPolicy.DESTROY,  # Adjust as needed
-            vpc=vpc,  # Ensure DynamoDB table is created inside the same VPC
+            removal_policy=cdk.RemovalPolicy.DESTROY,
         )
 
         # Define an IAM role for the task with the necessary permissions
