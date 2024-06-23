@@ -7,7 +7,6 @@ from aws_cdk import (
 )
 from constructs import Construct
 
-
 class ECSClusterStack(Stack):
     def __init__(
         self, scope: Construct, id: str, aws_account_id: str, aws_region: str, **kwargs
@@ -27,7 +26,7 @@ class ECSClusterStack(Stack):
             assumed_by=iam.ServicePrincipal("ecs-tasks.amazonaws.com"),
         )
 
-        # Add necessary policies to the role
+        # Add DynamoDB policies to the role
         task_role.add_to_policy(
             iam.PolicyStatement(
                 actions=[
@@ -38,18 +37,34 @@ class ECSClusterStack(Stack):
                     "dynamodb:PutItem",
                     "dynamodb:Query",
                     "dynamodb:Scan",
-                    "dynamodb:UpdateItem",
+                    "dynamodb:UpdateItem"
                 ],
-                resources=[
-                    f"arn:aws:dynamodb:{aws_region}:{aws_account_id}:table/STUDENT*"
-                ],
+                resources=["arn:aws:dynamodb:*:*:table/YourDynamoDBTableName"]
             )
         )
-        # Add more policies as needed
+
+        # Define an IAM execution role for the task to pull images from ECR
+        execution_role = iam.Role(
+            self,
+            "StudentApiExecutionRole",
+            assumed_by=iam.ServicePrincipal("ecs-tasks.amazonaws.com"),
+        )
+
+        # Attach the AmazonECSTaskExecutionRolePolicy to the execution role
+        execution_role.add_managed_policy(
+            iam.ManagedPolicy.from_managed_policy_arn(
+                self,
+                id = "ManagedECSTaskExecutionPolicy",
+                managed_policy_arn="arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+            )
+        )
 
         # Create a Fargate task definition
         task_definition = ecs.FargateTaskDefinition(
-            self, "StudentApiTaskDefinition", task_role=task_role
+            self,
+            "StudentApiTaskDefinition",
+            task_role=task_role,
+            execution_role=execution_role,
         )
 
         # Add a container to the task definition
@@ -59,19 +74,20 @@ class ECSClusterStack(Stack):
                 f"{aws_account_id}.dkr.ecr.{aws_region}.amazonaws.com/student-api-ecr-repo:latest"
             ),
             memory_limit_mib=512,
-            cpu=256,
+            cpu=256
         )
 
         # Open the port your FastAPI app is listening on
         container.add_port_mappings(ecs.PortMapping(container_port=80))
 
-        # Create a Fargate service
+        # Create a Fargate service with an Application Load Balancer
         fargate_service = ecs_patterns.ApplicationLoadBalancedFargateService(
             self,
             "StudentApiFargateService",
             cluster=cluster,
             task_definition=task_definition,
             public_load_balancer=True,
+            desired_count=1  # Adjust desired count as needed
         )
 
         # Optionally set up health checks

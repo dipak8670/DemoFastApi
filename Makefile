@@ -1,5 +1,5 @@
-IMAGE_NAME=my-studentapi-app:latest
-CONTAINER_NAME=my-studentapi-app-container
+IMAGE_NAME=student_api-app:latest
+CONTAINER_NAME=student_api-app-container
 HISTORY_FILE= .image_bash_directory
 
 build:
@@ -18,6 +18,8 @@ run:
 		-e AWS_SECRET_ACCESS_KEY \
 		-e AWS_DEFAULT_REGION \
 		-e AWS_SESSION_TOKEN \
+		-e AWS_ACCOUNT_ID \
+		-e AWS_REGION \
 		-v $(PWD)/$(HISTORY_FILE):/build/$(HISTORY_FILE) \
 		-v $(HOME)/.aws/:/root/.aws/:rw \
 		-v $(PWD):/home/root \
