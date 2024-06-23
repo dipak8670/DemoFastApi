@@ -5,6 +5,7 @@ from aws_cdk import (
     aws_ecs_patterns as ecs_patterns,
     aws_iam as iam,
     aws_logs as logs,
+    aws_dynamodb as dynamodb,
 )
 import aws_cdk as cdk
 from constructs import Construct
@@ -21,6 +22,20 @@ class ECSClusterStack(Stack):
 
         # Create an ECS cluster
         cluster = ecs.Cluster(self, "StudentApiCluster", vpc=vpc)
+
+        dynamo_table = dynamodb.Table(
+            self,
+            "StudentApiDynamoDBTable",
+            partition_key=dynamodb.Attribute(
+                name="roleNumber", type=dynamodb.AttributeType.STRING
+            ),
+            table_name="StudentApiDynamoDBTable",
+            sort_key=dynamodb.Attribute(
+                name="name", type=dynamodb.AttributeType.STRING
+            ),
+            removal_policy=cdk.RemovalPolicy.DESTROY,  # Adjust as needed
+            vpc=vpc,  # Ensure DynamoDB table is created inside the same VPC
+        )
 
         # Define an IAM role for the task with the necessary permissions
         task_role = iam.Role(
@@ -42,7 +57,9 @@ class ECSClusterStack(Stack):
                     "dynamodb:Scan",
                     "dynamodb:UpdateItem",
                 ],
-                resources=["arn:aws:dynamodb:*:*:table/YourDynamoDBTableName"],
+                resources=[
+                    f"arn:aws:dynamodb:{aws_region}:{aws_account_id}:table/StudentApiDynamoDBTable"
+                ],
             )
         )
 

@@ -5,7 +5,7 @@ import logging
 class DynamoDbExecutor:
     def __init__(self):
         self.dynamodb_resource = boto3.resource("dynamodb")
-        self.__table = self.dynamodb_resource.Table("STUDENT")
+        self.__table = self.dynamodb_resource.Table("StudentApiDynamoDBTable")
 
     def save(self, item: dict):
         try:
