@@ -1,5 +1,5 @@
-IMAGE_NAME=student_api-app:latest
-CONTAINER_NAME=student_api-app-container
+IMAGE_NAME=fastapi-app:latest
+CONTAINER_NAME=fastapi-app-container
 HISTORY_FILE= .image_bash_directory
 
 build:
@@ -10,20 +10,13 @@ build:
 		--build-arg AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
 	
 run:
-	touch $(PWD)/$(HISTORY_FILE)
 	docker run -it \
 		--rm \
-		-e HISTFILE=/root/$(HISTORY_FILE) \
 		-e AWS_ACCESS_KEY_ID \
 		-e AWS_SECRET_ACCESS_KEY \
 		-e AWS_DEFAULT_REGION \
 		-e AWS_SESSION_TOKEN \
-		-e AWS_ACCOUNT_ID \
-		-e AWS_REGION \
-		-v $(PWD)/$(HISTORY_FILE):/build/$(HISTORY_FILE) \
-		-v $(HOME)/.aws/:/root/.aws/:rw \
-		-v $(PWD):/home/root \
-		-d --name $(CONTAINER_NAME) \
+		-d --name $(CONTAINER_NAME) -p 80:80 \
 		$(IMAGE_NAME) 
 
 

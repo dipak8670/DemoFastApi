@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - 'main'
+
+permissions:
+  contents: write
+  pull-requests: write
+  repository-projects: write
+
+jobs:
+  check-linting-and-type-error:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install python dependencies
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+        
+      - name: Run black
+        run: |
+          pip install --upgrade pip
+          pip install black==22.12
+          black .
+
+      - name: Run mypy
+        run: |
+          pip install --upgrade pip
+          pip install mypy
+          mypy --ignore-missing-imports --exclude '__init__.py' luffy
+
+  check-unit-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install python dependencies
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Setup Docker buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          platforms: 'linux/amd64'
+
+      - name: Build Docker image
+        run: |
+          docker build -t demo-fastapi-app:latest .
+
+
+      - name: Run unit test
+        run: |
+          set -o pipefail
+          docker run --rm \
+            -v ${{ github.workspace }}:/home/root \
+            -v /var/run/docker.sock:/var/run/docker.sock:rw \
+            demo-fastapi-app:latest \
+            python -m pytest luffy --junitxml=./luffy-pytests.xml --cov-fail-under=5 --cov-report=term-missing --cov-branch --cov=luffy | tee ./luffy-pytest-coverage.txt
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: LUFFY_PYTEST
+          path: |
+            ./luffy-pytests.xml
+            ./luffy-pytest-coverage.txt
+  
+  coverage-comment:
+    runs-on: ubuntu-latest
+    needs: [check-unit-test]
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
+    steps:
+      - name: Download all workrun artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: LUFFY_PYTEST
+          path: ./LUFFY_PYTEST
+
+      - name: Pytest Coverage Comment
+        uses: MishaKav/pytest-coverage-comment@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT }}
+        with:
+          multiple-files: |
+            LUFFY_PYTEST, ./LUFFY_PYTEST/luffy-pytest-coverage.txt, ./LUFFY_PYTEST/luffy-pytests.xml

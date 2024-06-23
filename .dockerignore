@@ -1,9 +1,14 @@
 **/__pycache__
 __pycache__
+.pytest_cache
+.pytest_cache/*
 **/__pycache__/*
 **/.venv
 awscliv2.zip
+.image_bash_directory
 aws/*
+cdk.out/*
+cdk_env/*
 **/.classpath
 **/.dockerignore
 **/.env
