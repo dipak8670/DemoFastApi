@@ -7,6 +7,7 @@ from aws_cdk import (
 )
 from constructs import Construct
 
+
 class ECSClusterStack(Stack):
     def __init__(
         self, scope: Construct, id: str, aws_account_id: str, aws_region: str, **kwargs
@@ -37,9 +38,9 @@ class ECSClusterStack(Stack):
                     "dynamodb:PutItem",
                     "dynamodb:Query",
                     "dynamodb:Scan",
-                    "dynamodb:UpdateItem"
+                    "dynamodb:UpdateItem",
                 ],
-                resources=["arn:aws:dynamodb:*:*:table/YourDynamoDBTableName"]
+                resources=["arn:aws:dynamodb:*:*:table/YourDynamoDBTableName"],
             )
         )
 
@@ -54,8 +55,8 @@ class ECSClusterStack(Stack):
         execution_role.add_managed_policy(
             iam.ManagedPolicy.from_managed_policy_arn(
                 self,
-                id = "ManagedECSTaskExecutionPolicy",
-                managed_policy_arn="arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+                id="ManagedECSTaskExecutionPolicy",
+                managed_policy_arn="arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
             )
         )
 
@@ -74,7 +75,7 @@ class ECSClusterStack(Stack):
                 f"{aws_account_id}.dkr.ecr.{aws_region}.amazonaws.com/student-api-ecr-repo:latest"
             ),
             memory_limit_mib=512,
-            cpu=256
+            cpu=256,
         )
 
         # Open the port your FastAPI app is listening on
@@ -87,7 +88,7 @@ class ECSClusterStack(Stack):
             cluster=cluster,
             task_definition=task_definition,
             public_load_balancer=True,
-            desired_count=1  # Adjust desired count as needed
+            desired_count=1,  # Adjust desired count as needed
         )
 
         # Optionally set up health checks
